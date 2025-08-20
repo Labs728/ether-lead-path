@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      earnings: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          network: Database["public"]["Enums"]["blockchain_network"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          network: Database["public"]["Enums"]["blockchain_network"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          network?: Database["public"]["Enums"]["blockchain_network"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "earnings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          code_uses: number
+          created_at: string
+          earning_code: string
+          id: string
+          is_admin: boolean
+          total_earned: number
+          total_withdrawn: number
+          updated_at: string
+          wallet_address: string
+        }
+        Insert: {
+          code_uses?: number
+          created_at?: string
+          earning_code?: string
+          id?: string
+          is_admin?: boolean
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string
+          wallet_address: string
+        }
+        Update: {
+          code_uses?: number
+          created_at?: string
+          earning_code?: string
+          id?: string
+          is_admin?: boolean
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          id: string
+          notes: string | null
+          processed_at: string | null
+          processed_by: string | null
+          requested_at: string
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "withdrawals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +141,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      blockchain_network:
+        | "ethereum"
+        | "bnb"
+        | "polygon"
+        | "arbitrum"
+        | "base"
+        | "avalanche"
+        | "optimism"
+      withdrawal_status: "pending" | "processing" | "completed" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +276,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      blockchain_network: [
+        "ethereum",
+        "bnb",
+        "polygon",
+        "arbitrum",
+        "base",
+        "avalanche",
+        "optimism",
+      ],
+      withdrawal_status: ["pending", "processing", "completed", "rejected"],
+    },
   },
 } as const
