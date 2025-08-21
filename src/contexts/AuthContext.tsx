@@ -98,12 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setUser(userData);
       
-      // Redirect based on user role
-      if (userData.is_admin) {
-        window.location.href = '/admin';
-      } else {
-        window.location.href = '/dashboard';
-      }
+      // No redirect here - let the app handle routing
       toast({
         title: "Success",
         description: "Successfully authenticated with wallet",
@@ -132,9 +127,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!isConnected) {
       setUser(null);
       setIsLoading(false);
-    } else if (address && !user) {
-      // Auto-sign in if wallet is connected
-      signIn().finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }

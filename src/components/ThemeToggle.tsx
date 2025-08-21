@@ -13,6 +13,7 @@ export const ThemeToggle = () => {
       setTheme(savedTheme);
     } else {
       setTheme("dark");
+      localStorage.setItem("theme", "dark");
     }
     
     root.classList.remove("light", "dark");
