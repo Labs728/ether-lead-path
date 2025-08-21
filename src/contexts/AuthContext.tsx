@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
+import { useAppKitAccount, useAppKitProvider } from '@reown/appkit/react';
+import { BrowserProvider } from 'ethers';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -36,12 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   
-  const { address, isConnected } = useAccount();
-  const { signMessageAsync } = useSignMessage();
-  const { disconnect } = useDisconnect();
+  const { address, isConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider('eip155');
 
   const signIn = async () => {
-    if (!address) {
+    if (!address || !walletProvider) {
       toast({
         title: "Error",
         description: "Please connect your wallet first",
@@ -55,17 +55,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Create verification message
       const message = `Sign this message to verify your wallet address: ${address}\nTimestamp: ${Date.now()}`;
       
+      // Create ethers provider and signer
+      const ethersProvider = new BrowserProvider(walletProvider);
+      const signer = await ethersProvider.getSigner();
+      
       // Sign the message
-      await signMessageAsync({ 
-        account: address,
-        message 
+      await signer.signMessage(message);
+
+      // Set wallet address in Supabase context for RLS
+      await supabase.rpc('set_config', {
+        parameter: 'app.current_wallet',
+        value: address.toLowerCase()
       });
 
       // Check if user exists
       const { data: existingUser, error: fetchError } = await supabase
         .from('users')
         .select('*')
-        .eq('wallet_address', address)
+        .eq('wallet_address', address.toLowerCase())
         .maybeSingle();
 
       if (fetchError) {
@@ -79,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: newUser, error: createError } = await supabase
           .from('users')
           .insert({
-            wallet_address: address,
+            wallet_address: address.toLowerCase(),
             is_admin: address.toLowerCase() === '0x742d35cc6634c0532925a3b8d563c0ba4a8ce3b1' // Replace with actual admin address
           })
           .select()
@@ -115,7 +122,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = () => {
     setUser(null);
-    disconnect();
     toast({
       title: "Signed Out",
       description: "You have been signed out successfully",
