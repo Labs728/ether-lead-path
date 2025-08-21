@@ -138,7 +138,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_info: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          is_admin: boolean
+          user_id: string
+          wallet_address: string
+        }[]
+      }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       blockchain_network:
@@ -149,6 +160,7 @@ export type Database = {
         | "base"
         | "avalanche"
         | "optimism"
+        | "solana"
       withdrawal_status: "pending" | "processing" | "completed" | "rejected"
     }
     CompositeTypes: {
@@ -285,6 +297,7 @@ export const Constants = {
         "base",
         "avalanche",
         "optimism",
+        "solana",
       ],
       withdrawal_status: ["pending", "processing", "completed", "rejected"],
     },
