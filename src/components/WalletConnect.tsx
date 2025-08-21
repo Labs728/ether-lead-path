@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useConnect, useAccount } from "wagmi";
+import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
 import { Wallet, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export const WalletConnect = () => {
-  const { connectors, connect } = useConnect();
-  const { isConnected } = useAccount();
+  const { isConnected } = useAppKitAccount();
+  const { open } = useAppKit();
   const { signIn, isConnecting } = useAuth();
 
-  const handleConnect = (connector: any) => {
-    connect({ connector });
+  const handleConnect = () => {
+    open();
   };
 
   if (isConnected) {
@@ -57,17 +57,14 @@ export const WalletConnect = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        {connectors.map((connector) => (
-          <Button
-            key={connector.uid}
-            onClick={() => handleConnect(connector)}
-            variant="outline"
-            className="w-full justify-start border-border/40 hover:border-primary/50 hover:bg-primary/5"
-          >
-            <Wallet className="mr-2 h-4 w-4" />
-            {connector.name}
-          </Button>
-        ))}
+        <Button
+          onClick={handleConnect}
+          variant="outline"
+          className="w-full justify-start border-border/40 hover:border-primary/50 hover:bg-primary/5"
+        >
+          <Wallet className="mr-2 h-4 w-4" />
+          Connect Wallet
+        </Button>
       </CardContent>
     </Card>
   );

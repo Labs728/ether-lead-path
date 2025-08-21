@@ -150,6 +150,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      set_config: {
+        Args: { parameter: string; value: string }
+        Returns: undefined
+      }
     }
     Enums: {
       blockchain_network:

@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const message = `Sign this message to verify your wallet address: ${address}\nTimestamp: ${Date.now()}`;
       
       // Create ethers provider and signer
-      const ethersProvider = new BrowserProvider(walletProvider);
+      const ethersProvider = new BrowserProvider(walletProvider as any);
       const signer = await ethersProvider.getSigner();
       
       // Sign the message
